@@ -7,23 +7,48 @@
 #define PUERTO 5000
 #define BUFFER 1024
 
-DWORD WINAPI manejarCliente(LPVOID socket_cliente) {
-    SOCKET cliente = (SOCKET)socket_cliente;
+typedef struct {
+    SOCKET socket;
+    struct sockaddr_in dirCliente;
+} ClienteTCP;
+
+DWORD WINAPI manejarCliente(LPVOID param) {
+
+    ClienteTCP *clienteData = (ClienteTCP*)param;
+    SOCKET cliente = clienteData->socket;
+    struct sockaddr_in dirCliente = clienteData->dirCliente;
+
+    free(clienteData);
+
     char buffer[BUFFER];
     int bytes;
 
-    FILE *archivo = fopen("archivo_recibido.txt", "ab");
+    char nombreArchivo[150];
+
+    sprintf(nombreArchivo,
+            "texto_%s_%d.txt",
+            inet_ntoa(dirCliente.sin_addr),
+            ntohs(dirCliente.sin_port));
+
+    FILE *archivo = fopen(nombreArchivo, "wb");
+
     if (!archivo) {
         printf("Error al crear archivo\n");
         closesocket(cliente);
         return 1;
     }
 
+    printf("Recibiendo archivo de %s:%d\n",
+           inet_ntoa(dirCliente.sin_addr),
+           ntohs(dirCliente.sin_port));
+
     while ((bytes = recv(cliente, buffer, BUFFER, 0)) > 0) {
         fwrite(buffer, 1, bytes, archivo);
     }
 
-    printf("Archivo recibido correctamente.\n");
+    printf("Archivo recibido correctamente de %s:%d\n",
+           inet_ntoa(dirCliente.sin_addr),
+           ntohs(dirCliente.sin_port));
 
     fclose(archivo);
     closesocket(cliente);
@@ -31,6 +56,7 @@ DWORD WINAPI manejarCliente(LPVOID socket_cliente) {
 }
 
 int main() {
+
     WSADATA wsa;
     SOCKET servidor, cliente;
     struct sockaddr_in dirServidor, dirCliente;
@@ -50,8 +76,29 @@ int main() {
     printf("Servidor TCP esperando conexiones...\n");
 
     while (1) {
-        cliente = accept(servidor, (struct sockaddr*)&dirCliente, &tam);
-        CreateThread(NULL, 0, manejarCliente, (LPVOID)cliente, 0, NULL);
+
+        cliente = accept(
+            servidor,
+            (struct sockaddr*)&dirCliente,
+            &tam
+        );
+
+        printf("Cliente conectado desde %s:%d\n",
+               inet_ntoa(dirCliente.sin_addr),
+               ntohs(dirCliente.sin_port));
+
+        ClienteTCP *datos = malloc(sizeof(ClienteTCP));
+        datos->socket = cliente;
+        datos->dirCliente = dirCliente;
+
+        CreateThread(
+            NULL,
+            0,
+            manejarCliente,
+            datos,
+            0,
+            NULL
+        );
     }
 
     closesocket(servidor);
