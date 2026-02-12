@@ -23,23 +23,54 @@ int main() {
 
     bind(servidor, (struct sockaddr*)&dirServidor, sizeof(dirServidor));
 
-    FILE *archivo = fopen("imagen_recibida.jpg", "wb");
+    printf("Servidor UDP esperando archivos...\n");
 
-    printf("Servidor UDP esperando archivo...\n");
+    FILE *archivo = NULL;
+    char nombreArchivo[100];
 
     while (1) {
-        int bytes = recvfrom(servidor, buffer, BUFFER, 0,
-                            (struct sockaddr*)&cliente, &tam);
 
-        if (strncmp(buffer, "FIN", 3) == 0)
-            break;
+        int bytes = recvfrom(
+            servidor,
+            buffer,
+            BUFFER,
+            0,
+            (struct sockaddr*)&cliente,
+            &tam
+        );
+
+        if (bytes <= 0) continue;
+
+        if (strncmp(buffer, "FIN", 3) == 0) {
+            printf("Archivo recibido de %s:%d\n",
+                   inet_ntoa(cliente.sin_addr),
+                   ntohs(cliente.sin_port));
+
+            if (archivo != NULL) {
+                fclose(archivo);
+                archivo = NULL;
+            }
+
+            continue;
+        }
+
+        // Si es primer bloque, crear archivo nuevo
+        if (archivo == NULL) {
+            sprintf(nombreArchivo, "imagen_%s_%d.jpg",
+                    inet_ntoa(cliente.sin_addr),
+                    ntohs(cliente.sin_port));
+
+            archivo = fopen(nombreArchivo, "wb");
+
+            if (!archivo) {
+                printf("Error al crear archivo\n");
+                continue;
+            }
+        }
 
         fwrite(buffer, 1, bytes, archivo);
     }
 
-    printf("Archivo multimedia recibido.\n");
-
-    fclose(archivo);
     closesocket(servidor);
     WSACleanup();
     return 0;
