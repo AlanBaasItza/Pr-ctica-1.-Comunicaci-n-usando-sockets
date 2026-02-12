@@ -1,5 +1,5 @@
 1. Compilación de los Programas
-1.1 Abrir la consola
+1.1. Abrir la consola
 
 Presiona Win + R
 
@@ -10,7 +10,7 @@ Navega hasta la carpeta donde se encuentran los archivos .c
 Ejemplo:
 
 cd C:\Sockets\Proyecto
-1.2 Compilar los programas TCP
+1.2. Compilar los programas TCP
 
 Ejecuta los siguientes comandos:
 
@@ -23,7 +23,7 @@ servidor_tcp.exe
 
 cliente_tcp.exe
 
-1.3 Compilar los programas UDP
+1.3. Compilar los programas UDP
 
 Ejecuta:
 
@@ -37,7 +37,7 @@ servidor_udp.exe
 cliente_udp.exe
 
 2. Uso de la Aplicación TCP (Archivo de Texto)
-2.1 Preparar el servidor TCP
+2.1. Preparar el servidor TCP
 
 Ejecuta el servidor:
 
@@ -49,7 +49,7 @@ Servidor TCP esperando conexiones...
 
 El servidor queda en espera de uno o más clientes.
 
-2.2 Preparar el cliente TCP
+2.2. Preparar el cliente TCP
 
 Coloca el archivo de texto que deseas enviar en la misma carpeta del cliente.
 
@@ -63,7 +63,7 @@ cliente_tcp.exe
 
 El cliente enviará el archivo al servidor.
 
-2.3 Resultado
+2.3. Resultado
 
 El servidor creará el archivo:
 
@@ -72,7 +72,7 @@ archivo_recibido.txt
 Si varios clientes se conectan, el servidor los atiende de forma concurrente.
 
 3. Uso de la Aplicación UDP (Archivo Multimedia)
-3.1 Preparar el servidor UDP
+3.1. Preparar el servidor UDP
 
 Ejecuta:
 
@@ -81,7 +81,7 @@ servidor_udp.exe
 El servidor mostrará:
 
 Servidor UDP esperando archivo...
-5.2 Preparar el cliente UDP
+3.2. Preparar el cliente UDP
 
 Coloca el archivo multimedia en la carpeta del cliente.
 
@@ -94,7 +94,7 @@ También puede ser un archivo de audio o video.
 Ejecuta el cliente:
 
 cliente_udp.exe
-3.3 Resultado
+3.3. Resultado
 
 El servidor generará el archivo:
 
@@ -115,6 +115,7 @@ Máquinas diferentes (cambiando la IP del servidor)
 Ejemplo de IP remota en el cliente:
 
 servidor.sin_addr.s_addr = inet_addr("192.168.1.100");
+
 5. Puertos Utilizados
 Protocolo	Puerto
 TCP	5000
