@@ -24,14 +24,23 @@ int main() {
 
     int bytes;
     while ((bytes = fread(buffer, 1, BUFFER, archivo)) > 0) {
-        sendto(cliente, buffer, bytes, 0,
-              (struct sockaddr*)&servidor, sizeof(servidor));
+        sendto(
+            cliente,
+            buffer,
+            bytes,
+            0,
+            (struct sockaddr*)&servidor,
+            sizeof(servidor)
+        );
     }
 
     sendto(cliente, "FIN", 3, 0,
-          (struct sockaddr*)&servidor, sizeof(servidor));
+           (struct sockaddr*)&servidor,
+           sizeof(servidor));
 
-    printf("Archivo multimedia enviado.\n");
+    printf("Archivo enviado correctamente por UDP.\n");
+    printf("Presiona ENTER para salir...\n");
+    getchar();
 
     fclose(archivo);
     closesocket(cliente);
