@@ -7,6 +7,7 @@
 #define BUFFER 1024
 
 int main() {
+
     WSADATA wsa;
     SOCKET cliente;
     struct sockaddr_in servidor;
@@ -21,11 +22,17 @@ int main() {
     servidor.sin_port = htons(PUERTO);
     servidor.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    connect(cliente, (struct sockaddr*)&servidor, sizeof(servidor));
+    if (connect(cliente,
+               (struct sockaddr*)&servidor,
+               sizeof(servidor)) < 0) {
+        printf("Error al conectar\n");
+        return 1;
+    }
 
     FILE *archivo = fopen("archivo.txt", "rb");
+
     if (!archivo) {
-        printf("No se encontró archivo\n");
+        printf("No se encontró archivo.txt\n");
         return 1;
     }
 
@@ -33,10 +40,14 @@ int main() {
         send(cliente, buffer, bytes, 0);
     }
 
-    printf("Archivo enviado correctamente\n");
+    printf("Archivo enviado correctamente al servidor.\n");
 
     fclose(archivo);
     closesocket(cliente);
     WSACleanup();
+
+    printf("Presiona ENTER para salir...\n");
+    getchar();
+
     return 0;
 }
